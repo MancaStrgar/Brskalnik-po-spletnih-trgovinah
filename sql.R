@@ -21,6 +21,18 @@ tryCatch({
   dbSendQuery(conn, build_sql("CREATE TABLE vrsta (
                                id INTEGER PRIMARY KEY,
                                ime TEXT NOT NULL)"))
+  dbSendQuery(conn, build_sql("CREATE TABLE trgovina (
+                               id INTEGER PRIMARY KEY,
+                               ime TEXT NOT NULL,
+                               naslov TEXT NOT NULL)"))
+  dbSendQuery(conn, build_sql("CREATE TABLE podjetje (
+                               id INTEGER PRIMARY KEY,
+                               ime TEXT NOT NULL,
+                               naslov TEXT NOT NULL,
+                               telefon TEXT NOT NULL)"))
+  dbSendQuery(conn, build_sql("CREATE TABLE izdelek (
+                               id INTEGER PRIMARY KEY,
+                               ime TEXT NOT NULL)"))
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {

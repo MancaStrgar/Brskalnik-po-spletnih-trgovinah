@@ -18,6 +18,9 @@ tryCatch({
   # Poizvedbo zgradimo s funkcijo build_sql
   # in izvedemo s funkcijo dbGetQuery
   
+  dbSendQuery(conn, build_sql("DROP TABLE izdelek"))
+  dbSendQuery(conn, build_sql("DROP TABLE podjetje"))
+  dbSendQuery(conn, build_sql("DROP TABLE trgovina"))
   dbSendQuery(conn, build_sql("DROP TABLE vrsta"))
   
   # Rezultat dobimo kot razpredelnico (data frame)
