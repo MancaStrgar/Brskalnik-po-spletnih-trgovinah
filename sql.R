@@ -10,6 +10,7 @@ drv <- dbDriver("PostgreSQL")
 
 # Uporabimo tryCatch,
 # da prisilimo prekinitev povezave v primeru napake
+
 tryCatch({
   # Vzpostavimo povezavo
   conn <- dbConnect(drv, dbname = db, host = host,
@@ -31,8 +32,9 @@ tryCatch({
                                naslov TEXT NOT NULL,
                                telefon TEXT NOT NULL)"))
   dbSendQuery(conn, build_sql("CREATE TABLE izdelek (
-                               id INTEGER PRIMARY KEY,
-                               ime TEXT NOT NULL)"))
+                               id SERIAL PRIMARY KEY,
+                               ime TEXT NOT NULL,
+                               vrsta INTEGER NOT NULL REFERENCES vrsta(id))"))
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {
