@@ -78,3 +78,71 @@ vstavljanje.izdelek <- function(){
 }
 izdelek <- vstavljanje.izdelek()
 
+
+
+vstavljanje.podjetje <- function(){
+  
+  podjetje <- read.csv("podjetje.csv", sep=";")
+  # Uporabimo tryCatch,
+  # da prisilimo prekinitev povezave v primeru napake
+  tryCatch({
+    # Vzpostavimo povezavo
+    conn <- dbConnect(drv, dbname = db, host = host,
+                      user = user, password = password)
+    
+    # Poizvedbo zgradimo s funkcijo build_sql
+    # in izvedemo s funkcijo dbGetQuery
+    
+    for (i in 1:nrow(izdelki)){
+      dbSendQuery(conn, build_sql("INSERT INTO podjetje (id, ime, naslov, telefon)
+                                      VALUES (", podjetje[i, "id"], ", 
+                                             ", podjetje[i, "ime"], ", 
+                                              ", podjetje[i, "naslov"], ", 
+                                          ", podjetje[i, "telefon"], ")"))
+                                     
+    
+    }
+    # Rezultat dobimo kot razpredelnico (data frame)
+  }, finally = {
+    # Na koncu nujno prekinemo povezavo z bazo,
+    # saj preveč odprtih povezav ne smemo imeti
+    dbDisconnect(conn)
+    # Koda v finally bloku se izvede v vsakem primeru
+    # - bodisi ob koncu izvajanja try bloka,
+    # ali pa po tem, ko se ta konča z napako
+  })
+  }
+podjetje <- vstavljanje.podjetje()
+
+
+vstavljanje.trgovina <- function(){
+  
+  trgovine <- read.csv("trgovine.csv", sep=";")
+  # Uporabimo tryCatch,
+  # da prisilimo prekinitev povezave v primeru napake
+  tryCatch({
+    # Vzpostavimo povezavo
+    conn <- dbConnect(drv, dbname = db, host = host,
+                      user = user, password = password)
+    
+    # Poizvedbo zgradimo s funkcijo build_sql
+    # in izvedemo s funkcijo dbGetQuery
+    
+    for (i in 1:nrow(izdelki)){
+      dbSendQuery(conn, build_sql("INSERT INTO trgovina (id, ime,naslov)
+                                      VALUES (", trgovine[i, "id"], ", 
+                                      ", trgovine[i, "ime"], ", 
+                                 ", trgovine[i, "naslov"], ")"))
+      
+    }
+    # Rezultat dobimo kot razpredelnico (data frame)
+  }, finally = {
+    # Na koncu nujno prekinemo povezavo z bazo,
+    # saj preveč odprtih povezav ne smemo imeti
+    dbDisconnect(conn)
+    # Koda v finally bloku se izvede v vsakem primeru
+    # - bodisi ob koncu izvajanja try bloka,
+    # ali pa po tem, ko se ta konča z napako
+  })
+  }
+trgovina <- vstavljanje.trgovina()
