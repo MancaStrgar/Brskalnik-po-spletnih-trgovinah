@@ -15,3 +15,6 @@ uvoz <- function() {
 }
 izdelki <- uvoz()
 
+for (i in 1: nrow(izdelki)){
+  izdelki[i, "IZDELEK-id"] <- i
+}

@@ -35,6 +35,15 @@ tryCatch({
                                id SERIAL PRIMARY KEY,
                                ime TEXT NOT NULL,
                                vrsta INTEGER NOT NULL REFERENCES vrsta(id))"))
+  
+  dbSendQuery(conn, build_sql("CREATE TABLE prodaja (
+                              id SERIAL PRIMARY KEY,
+                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
+                              ime TEXT NOT NULL,
+                              kolicina TEXT NOT NULL,
+                              cena TEXT NOT NULL,
+                              vrsta INTEGER NOT NULL REFERENCES vrsta(id),
+                              podjetje INTEGER NOT NULL REFERENCES podjetje(id))"))
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {
