@@ -41,9 +41,7 @@ tryCatch({
                               izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               ime TEXT NOT NULL,
                               kolicina TEXT NOT NULL,
-                              cena TEXT NOT NULL,
-                              vrsta INTEGER NOT NULL REFERENCES vrsta(id),
-                              podjetje INTEGER NOT NULL REFERENCES podjetje(id))"))
+                              cena TEXT NOT NULL)"))
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {

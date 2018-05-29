@@ -162,13 +162,11 @@ vstavljanje.prodaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      t <- dbGetQuery(conn, build_sql("INSERT INTO prodaja (izdelek, ime, kolicina, cena,vrsta, podjetje)
+      t <- dbGetQuery(conn, build_sql("INSERT INTO prodaja (izdelek, ime, kolicina, cena)
                                       VALUES (", v[["IZDELEK-id"]], ", ",
                                       v[["IZDELEK-ime"]], ", ",
                                       v[["KOLIČINA"]], ", ",
-                                      v[["CENA"]], ", ",
-                                      v[["VRSTA-id"]], ", ",
-                                      v[["PODJETJE-id"]], ")
+                                      v[["CENA"]], ")
                                       RETURNING id"))
       
     }
