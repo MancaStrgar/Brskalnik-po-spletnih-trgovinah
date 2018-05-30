@@ -17,13 +17,13 @@ tryCatch({
   
   # Poizvedbo zgradimo s funkcijo build_sql
   # in izvedemo s funkcijo dbGetQuery
-  
+  dbSendQuery(conn, build_sql("DROP TABLE proizvaja CASCADE"))
   dbSendQuery(conn, build_sql("DROP TABLE prodaja"))
-  dbSendQuery(conn, build_sql("DROP TABLE izdelek"))
-  dbSendQuery(conn, build_sql("DROP TABLE podjetje"))
-  dbSendQuery(conn, build_sql("DROP TABLE trgovina"))
-  dbSendQuery(conn, build_sql("DROP TABLE vrsta"))
-  
+  dbSendQuery(conn, build_sql("DROP TABLE izdelek CASCADE"))
+  dbSendQuery(conn, build_sql("DROP TABLE podjetje CASCADE"))
+  dbSendQuery(conn, build_sql("DROP TABLE trgovina CASCADE"))
+  dbSendQuery(conn, build_sql("DROP TABLE vrsta CASCADE"))
+  #CASCADE zato da zbriše tabelo tudi če je odvisna od ene druge
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {
   # Na koncu nujno prekinemo povezavo z bazo,

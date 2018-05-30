@@ -22,15 +22,17 @@ tryCatch({
   dbSendQuery(conn, build_sql("CREATE TABLE vrsta (
                                id INTEGER PRIMARY KEY,
                                ime TEXT NOT NULL)"))
+  
   dbSendQuery(conn, build_sql("CREATE TABLE trgovina (
-                               id INTEGER PRIMARY KEY,
-                               ime TEXT NOT NULL,
-                               naslov TEXT NOT NULL)"))
+                              id INTEGER PRIMARY KEY,
+                              ime TEXT NOT NULL,
+                              naslov TEXT NOT NULL)"))
+  
   dbSendQuery(conn, build_sql("CREATE TABLE podjetje (
                                id INTEGER PRIMARY KEY,
-                               ime TEXT NOT NULL,
-                               naslov TEXT NOT NULL,
-                               telefon TEXT NOT NULL)"))
+                               ime TEXT NOT NULL ,
+                               naslov TEXT NOT NULL ,
+                               telefon TEXT NOT NULL )"))
   dbSendQuery(conn, build_sql("CREATE TABLE izdelek (
                                id SERIAL PRIMARY KEY,
                                ime TEXT NOT NULL,
@@ -39,9 +41,17 @@ tryCatch({
   dbSendQuery(conn, build_sql("CREATE TABLE prodaja (
                               id SERIAL PRIMARY KEY,
                               izdelek INTEGER NOT NULL REFERENCES izdelek(id),
+                              trgovina INTEGER NOT NULL REFERENCES trgovina(id),
                               ime TEXT NOT NULL,
                               kolicina TEXT NOT NULL,
                               cena TEXT NOT NULL)"))
+  
+  dbSendQuery(conn, build_sql("CREATE TABLE proizvaja (
+                              id SERIAL PRIMARY KEY,
+                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
+                              podjetje INTEGER NOT NULL REFERENCES podjetje(id),
+                              ime TEXT NOT NULL,
+                              kolicina TEXT NOT NULL)"))
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {

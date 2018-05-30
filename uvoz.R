@@ -6,7 +6,7 @@ library(digest)
 
 
 uvoz <- function() {
-  tab <- read_csv2(file="izdelki.csv",
+  tab <- read_csv2(file="izdelki1.csv",
                     locale = locale(encoding = "Windows-1250"), skip = 1,  n_max = 810)
 
   colnames(tab) <- c("IZDELEK-ime","IZDELEK-id","KOLIČINA","CENA","VRSTA-ime","VRSTA-id",
@@ -18,3 +18,10 @@ izdelki <- uvoz()
 for (i in 1: nrow(izdelki)){
   izdelki[i, "IZDELEK-id"] <- i
 }
+
+
+podjetja <- unique(izdelki[,c(10,11,12,13)])
+vrsta <- unique(izdelki[,c(5,6)])
+trgovine <- unique(izdelki[,c(7,8,9)])
+                   
+                   
