@@ -33,6 +33,7 @@ tryCatch({
                                ime TEXT NOT NULL ,
                                naslov TEXT NOT NULL ,
                                telefon TEXT NOT NULL )"))
+  
   dbSendQuery(conn, build_sql("CREATE TABLE izdelek (
                                id SERIAL PRIMARY KEY,
                                ime TEXT NOT NULL,

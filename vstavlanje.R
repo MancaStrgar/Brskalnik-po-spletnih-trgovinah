@@ -81,7 +81,7 @@ izdelek <- vstavljanje.izdelek()
 
 vstavljanje.trgovina <- function(){
   
-  trgovine <- read.csv("trgovine.csv", sep=";")
+  #trgovine <- read.csv("trgovine.csv", sep=";")
   # Uporabimo tryCatch,
   # da prisilimo prekinitev povezave v primeru napake
   tryCatch({
@@ -91,13 +91,16 @@ vstavljanje.trgovina <- function(){
     
     # Poizvedbo zgradimo s funkcijo build_sql
     # in izvedemo s funkcijo dbGetQuery
-    
-    for (i in 1:nrow(trgovine)){
-      dbSendQuery(conn, build_sql("INSERT INTO trgovina (id, ime, naslov)
-                                  VALUES (", trgovine[i, "id"], ", 
-                                  ", trgovine[i, "ime"], ", 
-                                  ", trgovine[i, "naslov"], ")"))
-      
+     
+
+
+      for (i in 1:nrow(trgovine)){
+        v <- trgovine[i, ]
+        dbSendQuery(conn, build_sql("INSERT INTO trgovina (id,ime, naslov)
+                                    VALUES (", v[["TRGOVINA-id"]], ",
+                                    ",v[["TRGOVINA-ime"]], ", 
+                                    ",v[["TRGOVINA-naslov"]], ")")) 
+
       
     }
     # Rezultat dobimo kot razpredelnico (data frame)
@@ -124,7 +127,7 @@ vstavljanje.podjetje <- function(){
       # Poizvedbo zgradimo s funkcijo build_sql
       # in izvedemo s funkcijo dbGetQuery
       
-      for (i in 1:nrow(podjetja1)){
+      for (i in 1:nrow(podjetja)){
         v <- podjetja[i, ]
         dbSendQuery(conn, build_sql("INSERT INTO podjetje (id,ime, naslov, telefon)
                                     VALUES (", v[["PODJETJE-id"]], ",
@@ -152,7 +155,7 @@ podjetje <- vstavljanje.podjetje()
 
 
 
-vstavljanje.prodaja <- function(){
+vstavljanje.proizvaja <- function(){
   
   # Uporabimo tryCatch,
   # da prisilimo prekinitev povezave v primeru napake
@@ -166,7 +169,7 @@ vstavljanje.prodaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO prodaja (izdelek, trgovina, ime, kolicina, cena)
+      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (izdelek, trgovina, ime, kolicina, cena)
                                   VALUES (", v[["IZDELEK-id"]], ",
                                   ", v[["TRGOVINA-id"]], ",
                                   ", v[["IZDELEK-ime"]], ", 
@@ -187,3 +190,41 @@ vstavljanje.prodaja <- function(){
   })
 }
 prodaja <- vstavljanje.prodaja()
+
+
+vstavljanje.proizvaja <- function(){
+  
+  # Uporabimo tryCatch,
+  # da prisilimo prekinitev povezave v primeru napake
+  tryCatch({
+    # Vzpostavimo povezavo
+    conn <- dbConnect(drv, dbname = db, host = host,
+                      user = user, password = password)
+    
+    # Poizvedbo zgradimo s funkcijo build_sql
+    # in izvedemo s funkcijo dbGetQuery
+    
+    for (i in 1:nrow(izdelki)){
+      v <- izdelki[i, ]
+      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (izdelek, podjetje, ime, kolicina)
+                                  VALUES (", v[["IZDELEK-id"]], ",
+                                  ", v[["PODJETJE-id"]], ",
+                                  ", v[["IZDELEK-ime"]], ", 
+                                  ", v[["KOLIČINA"]], ")"))
+      
+      
+      
+      
+    }
+    # Rezultat dobimo kot razpredelnico (data frame)
+  }, finally = {
+    # Na koncu nujno prekinemo povezavo z bazo,
+    # saj preveč odprtih povezav ne smemo imeti
+    dbDisconnect(conn)
+    # Koda v finally bloku se izvede v vsakem primeru
+    # - bodisi ob koncu izvajanja try bloka,
+    # ali pa po tem, ko se ta konča z napako
+  })
+}
+proizvaja <- vstavljanje.proizvaja()
+
