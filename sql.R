@@ -53,6 +53,9 @@ tryCatch({
                               izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               ime TEXT NOT NULL,
                               kolicina TEXT NOT NULL)"))
+  
+  
+  
                         
   # Rezultat dobimo kot razpredelnico (data frame)
 }, finally = {
@@ -63,7 +66,40 @@ tryCatch({
   # - bodisi ob koncu izvajanja try bloka,
   # ali pa po tem, ko se ta konča z napako
 })
-  
+
+pravice <- function(){
+  # Uporabimo tryCatch,(da se povežemo in bazo in odvežemo)
+  # da prisilimo prekinitev povezave v primeru napake
+  tryCatch({
+    # Vzpostavimo povezavo
+    conn <- dbConnect(drv, dbname = db, host = host,#drv=s čim se povezujemo
+                      user = user, password = password)
+    
+    dbSendQuery(conn, build_sql("GRANT CONNECT ON DATABASE sem2018_mancas TO klemenh WITH GRANT OPTION"))
+
+    dbSendQuery(conn, build_sql("GRANT ALL ON SCHEMA public TO klemenh WITH GRANT OPTION"))
+
+    dbSendQuery(conn, build_sql("GRANT ALL ON ALL TABLES IN SCHEMA public TO klemenh WITH GRANT OPTION"))
+    dbSendQuery(conn, build_sql("GRANT ALL ON ALL TABLES IN SCHEMA public TO mancas WITH GRANT OPTION"))
+   
+    
+    dbSendQuery(conn, build_sql("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO klemenh WITH GRANT OPTION"))
+    dbSendQuery(conn, build_sql("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO mancas WITH GRANT OPTION"))
+   
+    
+    dbSendQuery(conn, build_sql("GRANT CONNECT ON DATABASE sem2018_mancas TO javnost"))
+    dbSendQuery(conn, build_sql("GRANT SELECT ON ALL TABLES IN SCHEMA public TO javnost"))
+    
+    
+    
+  }, finally = {
+    # Na koncu nujno prekinemo povezavo z bazo,
+    # saj preveč odprtih povezav ne smemo imeti
+    dbDisconnect(conn) #PREKINEMO POVEZAVO
+    # Koda v finally bloku se izvede, preden program konča z napako
+  })
+}
+pravice()
   
   
  
