@@ -155,7 +155,7 @@ podjetje <- vstavljanje.podjetje()
 
 
 
-vstavljanje.proizvaja <- function(){
+vstavljanje.prodaja <- function(){
   
   # Uporabimo tryCatch,
   # da prisilimo prekinitev povezave v primeru napake
@@ -169,9 +169,9 @@ vstavljanje.proizvaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (izdelek, trgovina, ime, kolicina, cena)
-                                  VALUES (", v[["IZDELEK-id"]], ",
-                                  ", v[["TRGOVINA-id"]], ",
+      dbSendQuery(conn, build_sql("INSERT INTO prodaja (trgovina, izdelek, ime, kolicina, cena)
+                                  VALUES (", v[["TRGOVINA-id"]], ",
+                                  ", v[["IZDELEK-id"]], ",
                                   ", v[["IZDELEK-ime"]], ", 
                                   ", v[["KOLIČINA"]], ", 
                                   ", v[["CENA"]], ")"))
@@ -194,6 +194,8 @@ prodaja <- vstavljanje.prodaja()
 
 vstavljanje.proizvaja <- function(){
   
+  
+
   # Uporabimo tryCatch,
   # da prisilimo prekinitev povezave v primeru napake
   tryCatch({
@@ -206,16 +208,15 @@ vstavljanje.proizvaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (izdelek, podjetje, ime, kolicina)
-                                  VALUES (", v[["IZDELEK-id"]], ",
-                                  ", v[["PODJETJE-id"]], ",
+      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (podjetje, izdelek, ime, kolicina)
+                                  VALUES (", v[["PODJETJE-id"]], ",
+                                  ", v[["IZDELEK-id"]], ",
                                   ", v[["IZDELEK-ime"]], ", 
                                   ", v[["KOLIČINA"]], ")"))
       
-      
-      
-      
     }
+
+    
     # Rezultat dobimo kot razpredelnico (data frame)
   }, finally = {
     # Na koncu nujno prekinemo povezavo z bazo,
@@ -227,4 +228,7 @@ vstavljanje.proizvaja <- function(){
   })
 }
 proizvaja <- vstavljanje.proizvaja()
-
+  
+      
+#dbSendQuery(conn, build_sql(" ALTER  SEQUENCE proizvaja.id  RESTART WITH 5000 INCREMENT BY 25"))  
+      

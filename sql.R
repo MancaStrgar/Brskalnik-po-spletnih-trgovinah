@@ -41,16 +41,16 @@ tryCatch({
   
   dbSendQuery(conn, build_sql("CREATE TABLE prodaja (
                               id SERIAL PRIMARY KEY,
-                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               trgovina INTEGER NOT NULL REFERENCES trgovina(id),
+                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               ime TEXT NOT NULL,
                               kolicina TEXT NOT NULL,
                               cena TEXT NOT NULL)"))
   
   dbSendQuery(conn, build_sql("CREATE TABLE proizvaja (
                               id SERIAL PRIMARY KEY,
-                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               podjetje INTEGER NOT NULL REFERENCES podjetje(id),
+                              izdelek INTEGER NOT NULL REFERENCES izdelek(id),
                               ime TEXT NOT NULL,
                               kolicina TEXT NOT NULL)"))
                         

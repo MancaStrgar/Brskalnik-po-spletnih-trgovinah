@@ -16,7 +16,7 @@ uvoz <- function() {
 izdelki <- uvoz()
 
 for (i in 1: nrow(izdelki)){
-  izdelki[i, "IZDELEK-id"] <- i
+  izdelki[i, "IZDELEK-id"] <- 1000+i
 }
 
 
