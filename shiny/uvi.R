@@ -2,7 +2,7 @@ library(shiny)
 
 shinyUI(fluidPage(
   
-  titlePanel("Število selitev"),
+  titlePanel("Brskalnik po spletnih trgovinah"),
   
   tabsetPanel(
     tabPanel("Število priseljenih",

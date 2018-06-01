@@ -60,9 +60,10 @@ vstavljanje.izdelek <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO izdelek (id,ime,vrsta)
+      dbSendQuery(conn, build_sql("INSERT INTO izdelek (id,ime, pakiranje, vrstaa)
                                   VALUES (", v[["IZDELEK-id"]], ", ",
                                   v[["IZDELEK-ime"]], ", ",
+                                  v[["KOLIČINA"]], ", ",
                                   v[["VRSTA-id"]], ")"))
       
     }
@@ -169,11 +170,9 @@ vstavljanje.prodaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO prodaja (trgovina, izdelek, ime, kolicina, cena)
+      dbSendQuery(conn, build_sql("INSERT INTO prodaja (trgovina, izdelek, cena)
                                   VALUES (", v[["TRGOVINA-id"]], ",
                                   ", v[["IZDELEK-id"]], ",
-                                  ", v[["IZDELEK-ime"]], ", 
-                                  ", v[["KOLIČINA"]], ", 
                                   ", v[["CENA"]], ")"))
       
       
@@ -208,11 +207,9 @@ vstavljanje.proizvaja <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (podjetje, izdelek, ime, kolicina)
+      dbSendQuery(conn, build_sql("INSERT INTO proizvaja (podjetje, izdelek)
                                   VALUES (", v[["PODJETJE-id"]], ",
-                                  ", v[["IZDELEK-id"]], ",
-                                  ", v[["IZDELEK-ime"]], ", 
-                                  ", v[["KOLIČINA"]], ")"))
+                                  ", v[["IZDELEK-id"]], ")"))
       
     }
 

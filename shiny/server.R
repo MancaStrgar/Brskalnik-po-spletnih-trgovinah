@@ -1,10 +1,32 @@
 library(shiny)
 library(ggplot2)
+library(shiny)
+# Neposredno klicanje SQL ukazov v R
+library(dplyr)
+library(dbplyr)
+library(RPostgreSQL)
 
+source("auth.R")
+
+# Povežemo se z gonilnikom za PostgreSQL
+drv <- dbDriver("PostgreSQL")
+# Uporabimo tryCatch,
+# da prisilimo prekinitev povezave v primeru napake
+tryCatch({
+  # Vzpostavimo povezavo
+  conn <- dbConnect(drv, dbname = db, host = host,
+                    user = user, password = password)
+  
 shinyServer(function(input, output) {
+  
+  
+
+  
+  
+  
+  
   output$tabela2 <- renderPlot({
-    ggplot(data = tabela2 %>% filter(Drzava_drzavljanstva ==input$drzava,
-                                     Spol == input$spol),
+    ggplot(data = tabela2 %>% filter(Drzava_drzavljanstva ==input$vrsta),
            aes(x = Leto, y = Stevilo)) +
       geom_col(color = "purple", fill = "white")
   }) 
@@ -17,6 +39,18 @@ shinyServer(function(input, output) {
       geom_col(color = "blue", fill = "white") 
   })
   
+})
+
+
+
+
+}, finally = {
+  # Na koncu nujno prekinemo povezavo z bazo,
+  # saj preveč odprtih povezav ne smemo imeti
+  dbDisconnect(conn)
+  # Koda v finally bloku se izvede v vsakem primeru
+  # - bodisi ob koncu izvajanja try bloka,
+  # ali pa po tem, ko se ta konča z napako
 })
 
 
