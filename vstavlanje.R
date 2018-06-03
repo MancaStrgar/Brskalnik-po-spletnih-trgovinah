@@ -26,7 +26,7 @@ vstavljanje.vrsta <- function(){
     
     
     for (i in 1:nrow(vrste)) {
-      dbSendQuery(conn, build_sql("INSERT INTO vrsta (id, ime)
+      dbSendQuery(conn, build_sql("INSERT INTO vrsta (id, imee)
                                   VALUES (", vrste[i, "id"], ", 
                                   ", vrste[i, "ime"], ")"))
     }
@@ -60,7 +60,7 @@ vstavljanje.izdelek <- function(){
     
     for (i in 1:nrow(izdelki)){
       v <- izdelki[i, ]
-      dbSendQuery(conn, build_sql("INSERT INTO izdelek (id,ime, pakiranje, vrstaa)
+      dbSendQuery(conn, build_sql("INSERT INTO izdelek (id,ime, pakiranje, vrsta)
                                   VALUES (", v[["IZDELEK-id"]], ", ",
                                   v[["IZDELEK-ime"]], ", ",
                                   v[["KOLIČINA"]], ", ",
