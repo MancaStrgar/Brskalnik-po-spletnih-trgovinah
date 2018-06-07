@@ -1,6 +1,7 @@
 library(shiny)
+library(shinythemes)
 
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = shinytheme("superhero"),
   
   titlePanel("Brskalnik po spletnih trgovinah"),
   
@@ -8,24 +9,24 @@ shinyUI(fluidPage(
   mainPanel(
     #uiOutput('mytabs'),
     tabsetPanel(
-      tabPanel("Trgovina",
+      tabPanel("Iskanje po trgovini",
 
              sidebarPanel(
                 uiOutput("izborTrgovine"),
                 uiOutput("izborVrste"),
-                uiOutput("iskanjeIzdelka"),
+               # uiOutput("iskanjeIzdelka"),
                 uiOutput("iskanjeIzdelka2")
                ),
     
               mainPanel(tableOutput("izdelki"))
     
       ),
-      tabPanel("Kategorije",
+      tabPanel("Iskanje po kategoriji",
                
                sidebarPanel(
                  #uiOutput("izborTrgovine4"),
                  uiOutput("izborVrste4"),
-                 uiOutput("iskanjeIzdelka4"),
+                # uiOutput("iskanjeIzdelka4"),
                  uiOutput("iskanjeIzdelka24")
                ),
                
@@ -60,6 +61,7 @@ shinyUI(fluidPage(
       ),
                
                mainPanel(tableOutput("izdelki5"))
+               
                
       )
   )
