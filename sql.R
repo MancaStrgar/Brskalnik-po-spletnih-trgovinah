@@ -21,7 +21,7 @@ tryCatch({
   
   dbSendQuery(conn, build_sql("CREATE TABLE vrsta (
                                id INTEGER PRIMARY KEY,
-                               imee TEXT NOT NULL)"))
+                               ime TEXT NOT NULL)"))
   
   dbSendQuery(conn, build_sql("CREATE TABLE trgovina (
                               id INTEGER PRIMARY KEY,

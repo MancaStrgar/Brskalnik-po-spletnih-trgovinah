@@ -26,7 +26,7 @@ vstavljanje.vrsta <- function(){
     
     
     for (i in 1:nrow(vrste)) {
-      dbSendQuery(conn, build_sql("INSERT INTO vrsta (id, imee)
+      dbSendQuery(conn, build_sql("INSERT INTO vrsta (id, ime)
                                   VALUES (", vrste[i, "id"], ", 
                                   ", vrste[i, "ime"], ")"))
     }
