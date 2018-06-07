@@ -20,9 +20,48 @@ shinyUI(fluidPage(
               mainPanel(tableOutput("izdelki"))
     
       ),
-      tabPanel("Vrsta", "Tu ni nicesar"
+      tabPanel("Kategorije",
+               
+               sidebarPanel(
+                 #uiOutput("izborTrgovine4"),
+                 uiOutput("izborVrste4"),
+                 uiOutput("iskanjeIzdelka4"),
+                 uiOutput("iskanjeIzdelka24")
+               ),
+               
+               mainPanel(tableOutput("izdelki4"))
+               
+      ),
+      tabPanel("Iskanje po izdeleku",
+               
+               sidebarPanel(
+                 #uiOutput("izborTrgovine5"),
+                 #uiOutput("izborVrste5"),
+                 uiOutput("iskanjeIzdelka5"),
+                 uiOutput("iskanjeIzdelka25"),
+                 
+                 
+                 sliderInput("min",
+                             "Minimalni znesek transakcije:",
+                             min = 0,
+                             max = 10,
+                             value = 0,
+                            step = 0.1),
+                 
+               
+               sliderInput("max",
+                           "Maximalni znesek transakcije:",
+                           min = 0,
+                           max = 10,
+                           value = 2,
+                           step = 0.1)
+               
+               
+      ),
+               
+               mainPanel(tableOutput("izdelki5"))
+               
       )
-      
   )
   )
 
