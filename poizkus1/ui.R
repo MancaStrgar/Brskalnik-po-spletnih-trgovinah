@@ -6,16 +6,24 @@ shinyUI(fluidPage(
   
 
   mainPanel(
-    uiOutput('mytabs'),
+    #uiOutput('mytabs'),
+    tabsetPanel(
+      tabPanel("Trgovina",
 
              sidebarPanel(
-               uiOutput("izborTrgovine"),
-               uiOutput("izborVrste")),
-       
-               mainPanel(tableOutput("izdelki"))
+                uiOutput("izborTrgovine"),
+                uiOutput("izborVrste"),
+                uiOutput("iskanjeIzdelka"),
+                uiOutput("iskanjeIzdelka2")
+               ),
     
-   
-
+              mainPanel(tableOutput("izdelki"))
+    
+      ),
+      tabPanel("Vrsta", "Tu ni nicesar"
+      )
+      
+  )
   )
 
 ))

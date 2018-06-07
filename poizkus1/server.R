@@ -1,7 +1,7 @@
 library(shiny)
 library(dplyr)
 library(RPostgreSQL)
-library(dbplyr)
+#library(dbplyr)
 
 source("auth_public.R")
 
@@ -49,6 +49,8 @@ shinyServer(function(input, output,session) {
     )
   })
   
+
+
   
   #Želiva dodati možnost vnosa besede izdelka: NE DELA
 #  
@@ -71,14 +73,7 @@ shinyServer(function(input, output,session) {
   
 
 
-  
-  
-  
-  output$izdelki <- renderTable({
-    # Naredimo poizvedbo
-    # x %>% f(y, ...) je ekvivalentno f(x, y, ...)
-    
-    
+  NajdiIzdelke <- reactive({
     #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
     #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
     #####
@@ -94,40 +89,67 @@ shinyServer(function(input, output,session) {
       IzbranaTrgovina = input$trgovina
     }
     
- #   if (is.null(input$izdelek)){
- #     IzbranIzdelek="blitva"
- #   } else{
-#     IzbranIzdelek = input$izdelek
-#    }
-#    ######
-    
+    #   if (is.null(input$izdelek)){
+    #     IzbranIzdelek="blitva"
+    #   } else{
+    #     IzbranIzdelek = input$izdelek
+    #    }
+    #    ######
     
     
     sql <- "SELECT izdelek.ime, pakiranje, cena, trgovina.ime,vrsta.ime FROM izdelek
-            LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id
-            LEFT JOIN vrsta ON vrsta.id = izdelek.vrsta
-            LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
-            WHERE trgovina.ime =?id1 AND vrsta.ime =?id2"
+    LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id
+    LEFT JOIN vrsta ON vrsta.id = izdelek.vrsta
+    LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    WHERE trgovina.ime =?id1 AND vrsta.ime =?id2"
     query <- sqlInterpolate(conn, sql,id1=IzbranaTrgovina,id2=IzbranaVrsta) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
     Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
-
-  
-
-    data.frame(t)
     
+    colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
+    data.frame(t[,1:4]) #samo prve stiri stolpce hocemo
   })
-
-
-  zavihki <- c("Trgovina", "Vrsta")
-  #Ta del kode iz baze pobere vse trgovine in jih generira kot zavihke
-  output$mytabs = renderUI({ 
-
-    myTabs = lapply(zavihki, tabPanel)
-    do.call(tabsetPanel, c(myTabs,id="zavihek"))
+  
+  output$iskanjeIzdelka <-  renderUI({ #filter po izdelkih
+    selectizeInput("izbraniIzdelki", "Izdelek", multiple = T, choices = NajdiIzdelke()[,1])
   })
+  
+  output$iskanjeIzdelka2 <-  renderUI({ #filter po izdelkih
+    textInput("izbraniIzdelki2", "Izdelek")
+  })
+  
+  
+  
+  output$izdelki <- renderTable({ #glavna tabela rezultatov
+    tabela=NajdiIzdelke()
+    izdelki= input$izbraniIzdelki
+    search = input$izbraniIzdelki2
+    
+    if(is.null(izdelki)){
+      tabela1=tabela #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela1=tabela[tabela$ime %in% izdelki,] #sicer vrni izdelke ki ustrezajo filtru
+    }
+    
+    if(is.null(search) || search==""){
+      tabela2=tabela1 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela2=tabela1[grepl(search,tabela1$ime),]
+    }
+      
+    tabela2
+  })
+  
+  
+  # zavihki <- c("Trgovina", "Vrsta")
+  # #Ta del kode iz baze pobere vse trgovine in jih generira kot zavihke
+  # output$mytabs = renderUI({ 
+  # 
+  #   myTabs = lapply(zavihki, tabPanel)
+  #   do.call(tabsetPanel, c(myTabs,id="zavihek"))
+  # })
 
   
   
