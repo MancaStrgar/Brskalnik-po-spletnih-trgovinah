@@ -44,7 +44,7 @@ shinyUI(fluidPage(
                  sliderInput("min",
                              "Minimalni znesek transakcije:",
                              min = 0,
-                             max = 10,
+                             max = 50,
                              value = 0,
                             step = 0.1),
                  
@@ -52,8 +52,8 @@ shinyUI(fluidPage(
                sliderInput("max",
                            "Maximalni znesek transakcije:",
                            min = 0,
-                           max = 10,
-                           value = 2,
+                           max = 50,
+                           value =50,
                            step = 0.1)
                
                
