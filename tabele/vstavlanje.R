@@ -12,7 +12,7 @@ drv <- dbDriver("PostgreSQL")
 
 vstavljanje.vrsta <- function(){
   
-  vrste <- read.csv("vrste.csv")
+  vrste <- read.csv("podatki/vrste.csv")
   
   # Uporabimo tryCatch,
   # da prisilimo prekinitev povezave v primeru napake

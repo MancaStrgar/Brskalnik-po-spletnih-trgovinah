@@ -33,6 +33,18 @@ shinyUI(fluidPage(theme = shinytheme("superhero"),
                mainPanel(tableOutput("izdelki4"))
                
       ),
+      tabPanel("Iskanje po podjetju",
+               
+               sidebarPanel(
+                # uiOutput("izborPodjetja7"),
+                # uiOutput("izborVrste"),
+                 # uiOutput("iskanjeIzdelka"),
+                 uiOutput("iskanjeIzdelka27")
+               ),
+               
+               mainPanel(tableOutput("izdelki7"))
+               
+      ),
       tabPanel("Iskanje po izdeleku",
                
                sidebarPanel(

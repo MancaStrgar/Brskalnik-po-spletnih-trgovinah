@@ -23,5 +23,6 @@ for (i in 1: nrow(izdelki)){
 podjetja <- unique(izdelki[,c(10,11,12,13)])
 vrsta <- unique(izdelki[,c(5,6)])
 trgovine <- unique(izdelki[,c(7,8,9)])
+izdelki$CENA <- parse_number(izdelki$CENA, locale = locale(decimal_mark = ","))
                    
                    

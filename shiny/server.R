@@ -105,10 +105,10 @@ shinyServer(function(input, output,session) {
     query <- sqlInterpolate(conn, sql,id1=IzbranaTrgovina,id2=IzbranaVrsta) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
-    Encoding(t[,3])="UTF-8"
+    #Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
     
-   # colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
+   # colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
     data.frame(t[,1:3]) #samo prve stiri stolpce hocemo
   })
   
@@ -151,6 +151,81 @@ shinyServer(function(input, output,session) {
   #   do.call(tabsetPanel, c(myTabs,id="zavihek"))
   # })
 
+  
+  
+  
+  
+  
+  
+  
+  #ZAVIHEK PODJETJE
+
+
+  # NajdiIzdelke7 <- reactive({
+  #   #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
+  #   #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
+  #   #####
+  #   
+  # 
+  # 
+  # })
+  
+  #  output$iskanjeIzdelka <-  renderUI({ #filter po izdelkih
+  #   selectizeInput("izbraniIzdelki", "Izdelek", multiple = T, choices = NajdiIzdelke()[,1])
+  #  })
+  
+    output$iskanjeIzdelka27 <-  renderUI({ #filter po izdelkih
+     textInput("izbraniIzdelki27", "Poiščite podjetje:")
+    })
+  
+  
+  
+  output$izdelki7 <- renderTable({ #glavna tabela rezultatov
+    izdelki7= input$izbraniIzdelki7
+    search = input$izbraniIzdelki27
+    
+    sql <- "SELECT izdelek.ime, podjetje.ime FROM izdelek
+    LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
+    LEFT JOIN podjetje ON proizvaja.podjetje = podjetje.id
+    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    -- LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
+    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    WHERE TRUE"
+    
+    data <- list()
+    
+    if(! is.null(izdelki7)){
+      #tabela17=tabela7[tabela7$podjetje %in% izdelki7,] #sicer vrni izdelke ki ustrezajo filtru
+      sql <- paste(sql, "AND podjetje.ime IN (", paste(rep("?", length(izdelki7)), collapse = ", "), ")")
+      data <- c(data, izdelki7)
+    }
+    
+    if(! is.null(search) && search!=""){
+      #tabela27=tabela17[grepl(search,tabela17$podjetje),]
+      sql <- paste(sql, "AND podjetje.ime ILIKE ?")
+      data <- c(data, paste0('%', search, '%'))
+    }
+    
+    query <- sqlInterpolate(conn, sql, .dots = data) #preprecimo sql injectione
+    t=dbGetQuery(conn,query)
+    Encoding(t[,1])="UTF-8"
+    Encoding(t[,2])="UTF-8"
+    # Encoding(t[,5])="UTF-8"
+    
+    colnames(t)[2] = "podjetje" #preimenujem 4. stolpec
+    data.frame(t) #samo prve stiri stolpce hocemo
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 #ZAVIHEK VRSTA
   
   output$izborVrste4 <- renderUI({
@@ -189,7 +264,7 @@ shinyServer(function(input, output,session) {
     query <- sqlInterpolate(conn, sql,id2=IzbranaVrsta4) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
-    Encoding(t[,3])="UTF-8"
+    #Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
     
     colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
@@ -241,7 +316,7 @@ shinyServer(function(input, output,session) {
     query <- sqlInterpolate(conn, sql) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
-    Encoding(t[,3])="UTF-8"
+    #Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
     
     colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec

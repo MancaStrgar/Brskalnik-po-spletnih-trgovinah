@@ -44,7 +44,7 @@ tryCatch({
                               id SERIAL PRIMARY KEY,
                               trgovina INTEGER NOT NULL REFERENCES trgovina(id),
                               izdelek INTEGER NOT NULL REFERENCES izdelek(id),
-                              cena TEXT NOT NULL)"))
+                              cena DECIMAL NOT NULL)"))
   
   dbSendQuery(conn, build_sql("CREATE TABLE proizvaja (
                               id SERIAL PRIMARY KEY,
