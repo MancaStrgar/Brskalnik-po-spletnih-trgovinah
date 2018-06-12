@@ -25,26 +25,24 @@ shinyServer(function(input, output,session) {
 #ZAVIHEK TRGOVINA
   output$izborVrste <- renderUI({
     
-    izbire=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
-    Encoding(izbire[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
-    #Iskal sem bolj elegantno resitev, vendar je nisem nasel
-    
+    izbira_vrste=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
+    Encoding(izbira_vrste[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
+  
     selectInput("vrsta",
                             label = "Izberite vrsto:",
-                            choices = izbire,
+                            choices = izbira_vrste,
                             selected = "zelenjava"
                 )
   })
   
   output$izborTrgovine <- renderUI({
     
-    izbire1=dbGetQuery(conn, build_sql("SELECT ime FROM trgovina"))
-    Encoding(izbire1[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
-    #Iskal sem bolj elegantno resitev, vendar je nisem nasel
-    
+    izbira_trgovine=dbGetQuery(conn, build_sql("SELECT ime FROM trgovina"))
+    Encoding(izbira_trgovine[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
+   
     selectInput("trgovina",
                 label = "Izberite trgovino:",
-                choices = izbire1,
+                choices = izbira_trgovine,
                 selected = "Spar"
     )
   })
@@ -72,10 +70,8 @@ shinyServer(function(input, output,session) {
 #  })
   
 
-
   NajdiIzdelke <- reactive({
-    #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
-    #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
+    #Ob zagonu shiny javlja napako, zato mu damo zelenjava/spar kot privzeto izbiro.
     #####
     if (is.null(input$vrsta)){
       IzbranaVrsta="zelenjava"
@@ -89,14 +85,6 @@ shinyServer(function(input, output,session) {
       IzbranaTrgovina = input$trgovina
     }
     
-    #   if (is.null(input$izdelek)){
-    #     IzbranIzdelek="blitva"
-    #   } else{
-    #     IzbranIzdelek = input$izdelek
-    #    }
-    #    ######
-    
-    
     sql <- "SELECT izdelek.ime, pakiranje, cena, trgovina.ime,vrsta.ime FROM izdelek
     LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id
     LEFT JOIN vrsta ON vrsta.id = izdelek.vrsta
@@ -104,17 +92,11 @@ shinyServer(function(input, output,session) {
     WHERE trgovina.ime =?id1 AND vrsta.ime =?id2"
     query <- sqlInterpolate(conn, sql,id1=IzbranaTrgovina,id2=IzbranaVrsta) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
+   
     Encoding(t[,1])="UTF-8"
-    #Encoding(t[,3])="UTF-8"
-    Encoding(t[,5])="UTF-8"
-    
-   # colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
+    colnames(t)[2] = "cena"
     data.frame(t[,1:3]) #samo prve stiri stolpce hocemo
   })
-  
-#  output$iskanjeIzdelka <-  renderUI({ #filter po izdelkih
- #   selectizeInput("izbraniIzdelki", "Izdelek", multiple = T, choices = NajdiIzdelke()[,1])
-#  })
   
   output$iskanjeIzdelka2 <-  renderUI({ #filter po izdelkih
     textInput("izbraniIzdelki2", "Poiščite izdelek:")
@@ -142,47 +124,18 @@ shinyServer(function(input, output,session) {
     tabela2
   })
   
-  
-  # zavihki <- c("Trgovina", "Vrsta")
-  # #Ta del kode iz baze pobere vse trgovine in jih generira kot zavihke
-  # output$mytabs = renderUI({ 
-  # 
-  #   myTabs = lapply(zavihki, tabPanel)
-  #   do.call(tabsetPanel, c(myTabs,id="zavihek"))
-  # })
 
-  
-  
-  
-  
-  
-  
-  
   #ZAVIHEK PODJETJE
 
-
-  # NajdiIzdelke7 <- reactive({
-  #   #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
-  #   #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
-  #   #####
-  #   
-  # 
-  # 
-  # })
-  
-  #  output$iskanjeIzdelka <-  renderUI({ #filter po izdelkih
-  #   selectizeInput("izbraniIzdelki", "Izdelek", multiple = T, choices = NajdiIzdelke()[,1])
-  #  })
-  
-    output$iskanjeIzdelka27 <-  renderUI({ #filter po izdelkih
-     textInput("izbraniIzdelki27", "Poiščite podjetje:")
+    output$iskanjePodjetja <-  renderUI({ #filter po izdelkih
+     textInput("iskanjePodjetja", "Poiščite podjetje:")
     })
   
   
   
-  output$izdelki7 <- renderTable({ #glavna tabela rezultatov
-    izdelki7= input$izbraniIzdelki7
-    search = input$izbraniIzdelki27
+  output$podjetje1 <- renderTable({ #glavna tabela rezultatov
+    podjetje1= input$izbraniIzdelki7
+    search = input$iskanjePodjetja
     
     sql <- "SELECT izdelek.ime, podjetje.ime FROM izdelek
     LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
@@ -194,14 +147,12 @@ shinyServer(function(input, output,session) {
     
     data <- list()
     
-    if(! is.null(izdelki7)){
-      #tabela17=tabela7[tabela7$podjetje %in% izdelki7,] #sicer vrni izdelke ki ustrezajo filtru
-      sql <- paste(sql, "AND podjetje.ime IN (", paste(rep("?", length(izdelki7)), collapse = ", "), ")")
-      data <- c(data, izdelki7)
+    if(! is.null(podjetje1)){
+      sql <- paste(sql, "AND podjetje.ime IN (", paste(rep("?", length(podjetje1)), collapse = ", "), ")")
+      data <- c(data, podjetje1)
     }
     
     if(! is.null(search) && search!=""){
-      #tabela27=tabela17[grepl(search,tabela17$podjetje),]
       sql <- paste(sql, "AND podjetje.ime ILIKE ?")
       data <- c(data, paste0('%', search, '%'))
     }
@@ -210,9 +161,9 @@ shinyServer(function(input, output,session) {
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
     Encoding(t[,2])="UTF-8"
-    # Encoding(t[,5])="UTF-8"
+
     
-    colnames(t)[2] = "podjetje" #preimenujem 4. stolpec
+    colnames(t)[2] = "podjetje"
     data.frame(t) #samo prve stiri stolpce hocemo
   })
   
@@ -230,13 +181,13 @@ shinyServer(function(input, output,session) {
   
   output$izborVrste4 <- renderUI({
     
-    izbire4=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
-    Encoding(izbire4[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
+    izbira_vrste4=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
+    Encoding(izbira_vrste4[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
     #Iskal sem bolj elegantno resitev, vendar je nisem nasel
     
     selectInput("vrsta4",
                 label = "Izberite vrsto:",
-                choices = izbire4,
+                choices = izbira_vrste4,
                 selected = "zelenjava"
     )
   })
@@ -267,16 +218,12 @@ shinyServer(function(input, output,session) {
     #Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
     
-    colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
+    colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
     data.frame(t[,1:4]) #samo prve stiri stolpce hocemo
   })
   
- # output$iskanjeIzdelka4 <-  renderUI({ #filter po izdelkih
-#    selectizeInput("izbraniIzdelki4", "Izdelek", multiple = T, choices = NajdiIzdelke4()[,1])
-#  })
-  
-  output$iskanjeIzdelka24 <-  renderUI({ #filter po izdelkih
-    textInput("izbraniIzdelki24", "Poiščite izdelek:")
+  output$iskanjeIzdelka_vrsta <-  renderUI({ #filter po izdelkih
+    textInput("iskanjeIzdelka_vrsta", "Poiščite izdelek:")
   })
   
   
@@ -284,7 +231,7 @@ shinyServer(function(input, output,session) {
   output$izdelki4 <- renderTable({ #glavna tabela rezultatov
     tabela4=NajdiIzdelke4()
     izdelki4= input$izbraniIzdelki4
-    search = input$izbraniIzdelki24
+    search = input$iskanjeIzdelka_vrsta
     
     if(is.null(izdelki4)){
       tabela14=tabela4 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
@@ -304,11 +251,7 @@ shinyServer(function(input, output,session) {
   #ZAVIHEK IZDELEK
   
   NajdiIzdelke5 <- reactive({
-    #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
-    #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
-    #####
-    
-    
+
     sql <- "SELECT izdelek.ime, pakiranje, cena, trgovina.ime,vrsta.ime FROM izdelek
     LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id
     LEFT JOIN vrsta ON vrsta.id = izdelek.vrsta
@@ -316,18 +259,14 @@ shinyServer(function(input, output,session) {
     query <- sqlInterpolate(conn, sql) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
-    #Encoding(t[,3])="UTF-8"
     Encoding(t[,5])="UTF-8"
     
-    colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
-    colnames(t)[5] = "Vrsta" #preimenujem 5. stolpec
+    colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
+    colnames(t)[5] = "vrsta" #preimenujem 5. stolpec
     data.frame(t)
   })
   
-#  output$iskanjeIzdelka5 <-  renderUI({ #filter po izdelkih
-#    selectizeInput("izbraniIzdelki5", "Izdelek", multiple = T, choices = NajdiIzdelke4()[,1])
-#  })
-  
+
   output$iskanjeIzdelka25 <-  renderUI({ #filter po izdelkih
     textInput("izbraniIzdelki25", "Poiščite izdelek:")
   })
@@ -340,7 +279,7 @@ shinyServer(function(input, output,session) {
     search = input$izbraniIzdelki25
     
     if(is.null(izdelki5)){
-      tabela15=tabela5 %>%filter(cena>input$min, cena< input$max) #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+      tabela15=tabela5 %>%filter(cena>input$min_max[1], cena<input$min_max[2]) #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
       tabela15=tabela5[tabela5$ime %in% izdelki5,] #sicer vrni izdelke ki ustrezajo filtru
     }
@@ -353,6 +292,69 @@ shinyServer(function(input, output,session) {
     
     tabela25
   })
+  
+  
+  #KODA ZA PODJETJE2
+  
+  NajdiIzdelke50 <- reactive({
+    #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
+    #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
+    #####
+    
+    
+    sql <- "SELECT izdelek.ime, podjetje.ime FROM izdelek
+    LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
+    LEFT JOIN podjetje ON proizvaja.podjetje = podjetje.id
+    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    -- LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
+    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    WHERE TRUE"
+    query <- sqlInterpolate(conn, sql) #preprecimo sql injectione
+    t=dbGetQuery(conn,query)
+    Encoding(t[,1])="UTF-8"
+    #Encoding(t[,3])="UTF-8"
+    Encoding(t[,2])="UTF-8"
+    colnames(t)[2] = "podjetje"
+   # colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
+  #  colnames(t)[5] = "Vrsta" #preimenujem 5. stolpec
+    data.frame(t)
+  })
+  
+  #  output$iskanjeIzdelka5 <-  renderUI({ #filter po izdelkih
+  #    selectizeInput("izbraniIzdelki5", "Izdelek", multiple = T, choices = NajdiIzdelke4()[,1])
+  #  })
+  
+  output$iskanjeIzdelka250 <-  renderUI({ #filter po izdelkih
+    textInput("izbraniIzdelki250", "Poiščite izdelek:")
+  })
+  
+  
+  
+  output$izdelki50 <- renderTable({ #glavna tabela rezultatov
+    tabela50=NajdiIzdelke50()
+    izdelki50= input$izbraniIzdelki50
+    search = input$izbraniIzdelki250
+   
+    if(is.null(izdelki50)){
+      tabela150=tabela50#ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela150=tabela50[tabela50$podjetje %in% izdelki50,] #sicer vrni izdelke ki ustrezajo filtru
+    }
+    
+    if(is.null(search) || search==""){
+      tabela250=tabela150 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela250=tabela150[grepl(search,tabela150$podjetje,ignore.case = TRUE ),]
+    }
+    
+    tabela250
+  })
+  
+  
+  
+  
+  
+  
   
 })
 
