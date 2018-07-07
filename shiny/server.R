@@ -4,6 +4,9 @@ library(dbplyr)
 library(RPostgreSQL)
 #library(dbplyr)
 
+#ČE TI KDAJ NAPIŠE  DA SI PRESEGEL MAX POVEZAV, ZAŽENI TO:
+#RPostgreSQL::dbDisconnect(RPostgreSQL::dbListConnections(RPostgreSQL::PostgreSQL())[[1]]) 
+
 source("auth_public.R")
 
 #Za probleme s sumniki uporabi:
@@ -21,7 +24,7 @@ shinyServer(function(input, output,session) {
   cancel.onSessionEnded <- session$onSessionEnded(function() {
     dbDisconnect(conn) #ko zapremo shiny naj se povezava do baze zapre
   })
-
+  
   
 #-------------------------------------------------------------------------------------------------
       
@@ -77,7 +80,7 @@ shinyServer(function(input, output,session) {
     Encoding(t[,1])="UTF-8"
     colnames(t)[2] = "pakiranje"
     colnames(t)[3] = "cena"
-    t$cena <- paste(t$cena, "€")
+    t$cena <- paste0(t$cena, "€")
     data.frame(t[,1:3]) #samo prve stiri stolpce hocemo
   })
   
@@ -101,7 +104,7 @@ shinyServer(function(input, output,session) {
     if(is.null(search) || search==""){
       tabela2=tabela1 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
-      tabela2=tabela1[grepl(search,tabela1$ime),]
+      tabela2=tabela1[grepl(search,tabela1$ime, ignore.case = TRUE),]
     }
       
     tabela2
@@ -150,7 +153,7 @@ shinyServer(function(input, output,session) {
     
     colnames(t)[2] = "podjetje"
     colnames(t)[5] = "trgovina"
-    t$cena <- paste(t$cena,"€")
+    t$cena <- paste0(t$cena,"€")
     data.frame(t) #samo prve stiri stolpce hocemo
   })
   
@@ -199,7 +202,7 @@ shinyServer(function(input, output,session) {
     Encoding(t[,5])="UTF-8"
     
     colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
-    t$cena <- paste(t$cena, "€")
+    t$cena <- paste0(t$cena, "€")
     data.frame(t[,1:4]) #samo prve stiri stolpce hocemo
   })
   
@@ -223,7 +226,7 @@ shinyServer(function(input, output,session) {
     if(is.null(search) || search==""){
       tabela24=tabela14 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
-      tabela24=tabela14[grepl(search,tabela14$ime),]
+      tabela24=tabela14[grepl(search,tabela14$ime, ignore.case = TRUE),]
     }
     
     tabela24
@@ -247,6 +250,7 @@ shinyServer(function(input, output,session) {
     
     colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
     colnames(t)[5] = "vrsta" #preimenujem 5. stolpec
+    #Euro <- "\u20AC"
     data.frame(t)
   })
   
@@ -271,7 +275,7 @@ shinyServer(function(input, output,session) {
     if(is.null(search) || search==""){
       tabela25=tabela15 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
-      tabela25=tabela15[grepl(search,tabela15$ime),]
+      tabela25=tabela15[grepl(search,tabela15$ime, ignore.case = TRUE),]
     }
     
     tabela25
@@ -300,9 +304,8 @@ shinyServer(function(input, output,session) {
     Encoding(t[,2])="UTF-8"
     Encoding(t[,5])="UTF-8"
     colnames(t)[2] = "podjetje"
-   # colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
     colnames(t)[5] = "trgovina" #preimenujem 5. stolpec
-    t$cena <- paste(t$cena, "€")
+    t$cena <- paste0(t$cena, "€")
     data.frame(t)
   })
   
@@ -313,54 +316,30 @@ shinyServer(function(input, output,session) {
   output$iskanjeIzdelka250 <-  renderUI({ #filter po izdelkih
     textInput("izbraniIzdelki250", "Poiščite podjetje:")
   })
-  
-  
+  output$iskanjeIzdelka8 <-  renderUI({ #filter po izdelkih
+    textInput("izbraniIzdelki8", "Poiščite izdelek:")
+  })
   
   output$izdelki50 <- renderTable({ #glavna tabela rezultatov
     tabela50=NajdiIzdelke50()
     izdelki50= input$izbraniIzdelki50
-    search = input$izbraniIzdelki250
-   
-    if(is.null(izdelki50)){
-      tabela150=tabela50#ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    search = input$izbraniIzdelki250 
+
+
+    if(is.null(search) || search==""){
+      tabela250=tabela50 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
-      tabela150=tabela50[tabela50$podjetje %in% izdelki50,] #sicer vrni izdelke ki ustrezajo filtru
+      tabela250=tabela50[grepl(search,tabela50$podjetje ,ignore.case = TRUE),]
     }
+    
+    search = input$izbraniIzdelki8  #nov search za izdelke
     
     if(is.null(search) || search==""){
-      tabela250=tabela150 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+      tabela250=tabela250 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
     } else{
-      tabela250=tabela150[grepl(search,tabela150$podjetje,ignore.case = TRUE ),]
+      tabela250=tabela250[grepl(search,tabela250$ime ,ignore.case = TRUE),]
     }
-    
-    
     tabela250
-  })
-  
-  
-  output$iskanjeIzdelka8 <-  renderUI({ #filter po izdelkih
-    textInput("iskanjeIzdelka8", "Poiščite izdelek:")
-  })
-  
-  
-  output$izdelki8 <- renderTable({ #glavna tabela rezultatov
-    tabela8=NajdiIzdelke50()
-    izdelki8= input$izbraniIzdelki8
-    search = input$iskanjeIzdelka8
-    
-    if(is.null(izdelki8)){
-      tabela18=tabela8 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
-    } else{
-      tabela18=tabela8[tabela8$ime %in% izdelki8,] #sicer vrni izdelke ki ustrezajo filtru
-    }
-    
-    if(is.null(search) || search==""){
-      tabela28=tabela18 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
-    } else{
-      tabela28=tabela18[grepl(search,tabela18$ime),]
-    }
-    
-    tabela28
   })
   
   
