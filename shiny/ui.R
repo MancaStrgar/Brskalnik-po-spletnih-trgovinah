@@ -56,7 +56,8 @@ shinyUI(fluidPage(theme = shinytheme("united"),
       tabPanel("Iskanje po podjetju2",
                
                sidebarPanel(
-                 uiOutput("iskanjeIzdelka250")
+                 uiOutput("iskanjeIzdelka250"),
+                 uiOutput("iskanjeIzdelka8")
                ),
                mainPanel(tableOutput("izdelki50"))
       )

@@ -21,7 +21,10 @@ shinyServer(function(input, output,session) {
   cancel.onSessionEnded <- session$onSessionEnded(function() {
     dbDisconnect(conn) #ko zapremo shiny naj se povezava do baze zapre
   })
+
   
+#-------------------------------------------------------------------------------------------------
+      
 #ZAVIHEK TRGOVINA
   output$izborVrste <- renderUI({
     
@@ -48,28 +51,6 @@ shinyServer(function(input, output,session) {
   })
   
 
-
-  
-  #Želiva dodati možnost vnosa besede izdelka: NE DELA
-#  
-#  server <- function(input, output, session) {
-#    updateSelectizeInput(session, 'izdelek', choices = izbire2, server = TRUE)
- # }
-#  
-#  
-#  output$izborIzdelka <- renderUI({
-#    
-#    izbire2=dbGetQuery(conn, build_sql("SELECT ime FROM izdelek"))
-#    Encoding(izbire2[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
-#    #Iskal sem bolj elegantno resitev, vendar je nisem nasel
-#    
-#    selectizeInput("izdelek",
-#                label = "Poiščite izdelek",
-#                choices = izbire2
-#    )
-#  })
-  
-
   NajdiIzdelke <- reactive({
     #Ob zagonu shiny javlja napako, zato mu damo zelenjava/spar kot privzeto izbiro.
     #####
@@ -94,7 +75,9 @@ shinyServer(function(input, output,session) {
     t=dbGetQuery(conn,query)
    
     Encoding(t[,1])="UTF-8"
-    colnames(t)[2] = "cena"
+    colnames(t)[2] = "pakiranje"
+    colnames(t)[3] = "cena"
+    t$cena <- paste(t$cena, "€")
     data.frame(t[,1:3]) #samo prve stiri stolpce hocemo
   })
   
@@ -124,7 +107,9 @@ shinyServer(function(input, output,session) {
     tabela2
   })
   
-
+  
+#-------------------------------------------------------------------------------------------------
+  
   #ZAVIHEK PODJETJE
 
     output$iskanjePodjetja <-  renderUI({ #filter po izdelkih
@@ -137,12 +122,11 @@ shinyServer(function(input, output,session) {
     podjetje1= input$izbraniIzdelki7
     search = input$iskanjePodjetja
     
-    sql <- "SELECT izdelek.ime, podjetje.ime FROM izdelek
+    sql <- "SELECT izdelek.ime, podjetje.ime, pakiranje, cena, trgovina.ime FROM izdelek
     LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
     LEFT JOIN podjetje ON proizvaja.podjetje = podjetje.id
-    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
-    -- LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
-    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
+    LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
     WHERE TRUE"
     
     data <- list()
@@ -161,21 +145,17 @@ shinyServer(function(input, output,session) {
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
     Encoding(t[,2])="UTF-8"
+    Encoding(t[,5])="UTF-8"
 
     
     colnames(t)[2] = "podjetje"
+    colnames(t)[5] = "trgovina"
+    t$cena <- paste(t$cena,"€")
     data.frame(t) #samo prve stiri stolpce hocemo
   })
   
   
-  
-  
-  
-  
-  
-  
-  
-  
+#-------------------------------------------------------------------------------------------------
   
 #ZAVIHEK VRSTA
   
@@ -219,6 +199,7 @@ shinyServer(function(input, output,session) {
     Encoding(t[,5])="UTF-8"
     
     colnames(t)[4] = "trgovina" #preimenujem 4. stolpec
+    t$cena <- paste(t$cena, "€")
     data.frame(t[,1:4]) #samo prve stiri stolpce hocemo
   })
   
@@ -247,6 +228,9 @@ shinyServer(function(input, output,session) {
     
     tabela24
   })
+  
+  
+#-------------------------------------------------------------------------------------------------
   
   #ZAVIHEK IZDELEK
   
@@ -294,6 +278,8 @@ shinyServer(function(input, output,session) {
   })
   
   
+#-------------------------------------------------------------------------------------------------
+  
   #KODA ZA PODJETJE2
   
   NajdiIzdelke50 <- reactive({
@@ -302,21 +288,21 @@ shinyServer(function(input, output,session) {
     #####
     
     
-    sql <- "SELECT izdelek.ime, podjetje.ime FROM izdelek
+    sql <- "SELECT izdelek.ime, podjetje.ime, pakiranje, cena, trgovina.ime FROM izdelek
     LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
     LEFT JOIN podjetje ON proizvaja.podjetje = podjetje.id
-    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
-    -- LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
-    -- LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
+    LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
+    LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
     WHERE TRUE"
     query <- sqlInterpolate(conn, sql) #preprecimo sql injectione
     t=dbGetQuery(conn,query)
     Encoding(t[,1])="UTF-8"
-    #Encoding(t[,3])="UTF-8"
     Encoding(t[,2])="UTF-8"
+    Encoding(t[,5])="UTF-8"
     colnames(t)[2] = "podjetje"
    # colnames(t)[4] = "Trgovina" #preimenujem 4. stolpec
-  #  colnames(t)[5] = "Vrsta" #preimenujem 5. stolpec
+    colnames(t)[5] = "trgovina" #preimenujem 5. stolpec
+    t$cena <- paste(t$cena, "€")
     data.frame(t)
   })
   
@@ -325,7 +311,7 @@ shinyServer(function(input, output,session) {
   #  })
   
   output$iskanjeIzdelka250 <-  renderUI({ #filter po izdelkih
-    textInput("izbraniIzdelki250", "Poiščite izdelek:")
+    textInput("izbraniIzdelki250", "Poiščite podjetje:")
   })
   
   
@@ -347,11 +333,35 @@ shinyServer(function(input, output,session) {
       tabela250=tabela150[grepl(search,tabela150$podjetje,ignore.case = TRUE ),]
     }
     
+    
     tabela250
   })
   
   
+  output$iskanjeIzdelka8 <-  renderUI({ #filter po izdelkih
+    textInput("iskanjeIzdelka8", "Poiščite izdelek:")
+  })
   
+  
+  output$izdelki8 <- renderTable({ #glavna tabela rezultatov
+    tabela8=NajdiIzdelke50()
+    izdelki8= input$izbraniIzdelki8
+    search = input$iskanjeIzdelka8
+    
+    if(is.null(izdelki8)){
+      tabela18=tabela8 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela18=tabela8[tabela8$ime %in% izdelki8,] #sicer vrni izdelke ki ustrezajo filtru
+    }
+    
+    if(is.null(search) || search==""){
+      tabela28=tabela18 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+    } else{
+      tabela28=tabela18[grepl(search,tabela18$ime),]
+    }
+    
+    tabela28
+  })
   
   
   
