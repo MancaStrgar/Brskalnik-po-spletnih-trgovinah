@@ -29,6 +29,7 @@ shinyServer(function(input, output,session) {
 #-------------------------------------------------------------------------------------------------
       
 #ZAVIHEK TRGOVINA
+  
   output$izborVrste <- renderUI({
     
     izbira_vrste=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
@@ -111,52 +112,7 @@ shinyServer(function(input, output,session) {
   })
   
   
-#-------------------------------------------------------------------------------------------------
-  
-  #ZAVIHEK PODJETJE
 
-    output$iskanjePodjetja <-  renderUI({ #filter po izdelkih
-     textInput("iskanjePodjetja", "Poiščite podjetje:")
-    })
-  
-  
-  
-  output$podjetje1 <- renderTable({ #glavna tabela rezultatov
-    podjetje1= input$izbraniIzdelki7
-    search = input$iskanjePodjetja
-    
-    sql <- "SELECT izdelek.ime, podjetje.ime, pakiranje, cena, trgovina.ime FROM izdelek
-    LEFT JOIN proizvaja ON proizvaja.izdelek=izdelek.id
-    LEFT JOIN podjetje ON proizvaja.podjetje = podjetje.id
-    LEFT JOIN prodaja ON prodaja.izdelek=izdelek.id 
-    LEFT JOIN trgovina ON trgovina.id=prodaja.trgovina
-    WHERE TRUE"
-    
-    data <- list()
-    
-    if(! is.null(podjetje1)){
-      sql <- paste(sql, "AND podjetje.ime IN (", paste(rep("?", length(podjetje1)), collapse = ", "), ")")
-      data <- c(data, podjetje1)
-    }
-    
-    if(! is.null(search) && search!=""){
-      sql <- paste(sql, "AND podjetje.ime ILIKE ?")
-      data <- c(data, paste0('%', search, '%'))
-    }
-    
-    query <- sqlInterpolate(conn, sql, .dots = data) #preprecimo sql injectione
-    t=dbGetQuery(conn,query)
-    Encoding(t[,1])="UTF-8"
-    Encoding(t[,2])="UTF-8"
-    Encoding(t[,5])="UTF-8"
-
-    
-    colnames(t)[2] = "podjetje"
-    colnames(t)[5] = "trgovina"
-    t$cena <- paste0(t$cena,"€")
-    data.frame(t) #samo prve stiri stolpce hocemo
-  })
-  
   
 #-------------------------------------------------------------------------------------------------
   
@@ -279,6 +235,8 @@ shinyServer(function(input, output,session) {
     }
     
     tabela25
+    
+    
   })
   
   

@@ -1,7 +1,7 @@
 library(shiny)
 library(shinythemes)
 
-shinyUI(fluidPage(theme = shinytheme("united"),
+shinyUI(fluidPage(theme = shinytheme("superhero"),
                   
   
   titlePanel("Brskalnik po spletnih trgovinah"),
@@ -38,22 +38,15 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                              min = 0,
                              max = 50,
                              value = c(0,50),
-                             step = 0.1)
+                             step = 0.1,
+                             post = "€",
+                             sep = ".")
                ),
                mainPanel(tableOutput("izdelki5"))
       ),
       
+    
       tabPanel("Iskanje po podjetju",
-               
-               sidebarPanel(
-                 uiOutput("iskanjePodjetja")
-               ),
-               
-               mainPanel(tableOutput("podjetje1"))
-               
-      ),
-      
-      tabPanel("Iskanje po podjetju2",
                
                sidebarPanel(
                  uiOutput("iskanjeIzdelka250"),
