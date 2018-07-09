@@ -300,6 +300,9 @@ shinyServer(function(input, output,session) {
     tabela250
   })
 
+  
+#-----------------------------------------------------------------------------------
+  #NAKUPOVALNI SEZNAM
   output$mojizdelek <- renderText(input$izdelek)
   
   
