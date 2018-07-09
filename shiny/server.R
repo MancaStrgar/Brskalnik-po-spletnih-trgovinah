@@ -299,7 +299,8 @@ shinyServer(function(input, output,session) {
     }
     tabela250
   })
-  
+
+  output$mojizdelek <- renderText(input$izdelek)
   
   
   

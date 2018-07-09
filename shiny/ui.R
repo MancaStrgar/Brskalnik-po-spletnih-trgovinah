@@ -44,7 +44,7 @@ shinyUI(fluidPage(theme = shinytheme("superhero"),
                ),
                mainPanel(tableOutput("izdelki5"))
       ),
-      
+   
     
       tabPanel("Iskanje po podjetju",
                
@@ -53,6 +53,15 @@ shinyUI(fluidPage(theme = shinytheme("superhero"),
                  uiOutput("iskanjeIzdelka8")
                ),
                mainPanel(tableOutput("izdelki50"))
+      ),
+      
+      tabPanel("Nakupovani seznam",
+               
+               sidebarPanel( ("Vpiši izdelke"),
+                             textAreaInput("izdelek", "nakupovalni listek", ""),
+                             rows = 10),
+               mainPanel("Nakupovalni seznam:"),
+               verbatimTextOutput("mojizdelek")
       )
       
      
