@@ -82,7 +82,7 @@ shinyServer(function(input, output,session) {
     colnames(t)[2] = "pakiranje"
     colnames(t)[3] = "cena"
     t$cena <- paste0(t$cena, "€")
-    data.frame(t[,1:3]) #samo prve stiri stolpce hocemo
+    data.frame(t[,1:3]) #samo prve tri stolpce hocemo
   })
   
   output$iskanjeIzdelka2 <-  renderUI({ #filter po izdelkih
@@ -92,15 +92,16 @@ shinyServer(function(input, output,session) {
 
 
   output$izdelki <- renderTable({ #glavna tabela rezultatov
-    tabela=NajdiIzdelke()
-    izdelki= input$izbraniIzdelki
+    tabela1=NajdiIzdelke()
+#    tabela1=NajdiIzdelke()
+#    izdelki= input$izbraniIzdelki
     search = input$izbraniIzdelki2
     
-    if(is.null(izdelki)){
-      tabela1=tabela #ce uporabnik ni filtriral izdekov, vrni celo tabelo
-    } else{
-      tabela1=tabela[tabela$ime %in% izdelki,] #sicer vrni izdelke ki ustrezajo filtru
-    }
+#    if(is.null(izdelki)){
+#      tabela1=tabela #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+#    } else{
+#      tabela1=tabela[tabela$ime %in% izdelki,] #sicer vrni izdelke ki ustrezajo filtru
+#    }
     
     if(is.null(search) || search==""){
       tabela2=tabela1 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
@@ -122,7 +123,7 @@ shinyServer(function(input, output,session) {
     
     izbira_vrste4=dbGetQuery(conn, build_sql("SELECT ime FROM vrsta"))
     Encoding(izbira_vrste4[,1])="UTF-8" #vsakic posebej je potrebno character stolpce spremeniti v pravi encoding.
-    #Iskal sem bolj elegantno resitev, vendar je nisem nasel
+
     
     selectInput("vrsta4",
                 label = "Izberite vrsto:",
@@ -169,15 +170,16 @@ shinyServer(function(input, output,session) {
   
   
   output$izdelki4 <- renderTable({ #glavna tabela rezultatov
-    tabela4=NajdiIzdelke4()
-    izdelki4= input$izbraniIzdelki4
+    tabela14=NajdiIzdelke4()
+#    tabela4=NajdiIzdelke4()
+#    izdelki4= input$izbraniIzdelki4
     search = input$iskanjeIzdelka_vrsta
     
-    if(is.null(izdelki4)){
-      tabela14=tabela4 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
-    } else{
-      tabela14=tabela4[tabela4$ime %in% izdelki4,] #sicer vrni izdelke ki ustrezajo filtru
-    }
+#    if(is.null(izdelki4)){
+#      tabela14=tabela4 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+#    } else{
+#      tabela14=tabela4[tabela4$ime %in% izdelki4,] #sicer vrni izdelke ki ustrezajo filtru
+#    }
     
     if(is.null(search) || search==""){
       tabela24=tabela14 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
@@ -218,15 +220,17 @@ shinyServer(function(input, output,session) {
   
   
   output$izdelki5 <- renderTable({ #glavna tabela rezultatov
-    tabela5=NajdiIzdelke5()
-    izdelki5= input$izbraniIzdelki5
+    tabela15=NajdiIzdelke5()
+#    tabela5=NajdiIzdelke5()
+#    izdelki5= input$izbraniIzdelki5
     search = input$izbraniIzdelki25
     
-    if(is.null(izdelki5)){
-      tabela15=tabela5 %>%filter(cena>input$min_max[1], cena<input$min_max[2]) #ce uporabnik ni filtriral izdekov, vrni celo tabelo
-    } else{
-      tabela15=tabela5[tabela5$ime %in% izdelki5,] #sicer vrni izdelke ki ustrezajo filtru
-    }
+    tabela15=tabela15 %>%filter(cena>input$min_max[1], cena<input$min_max[2])
+#    if(is.null(izdelki5)){
+#      tabela15=tabela5 %>%filter(cena>input$min_max[1], cena<input$min_max[2]) #ce uporabnik ni filtriral izdekov, vrni celo tabelo
+#    } else{
+#      tabela15=tabela5[tabela5$ime %in% izdelki5,] #sicer vrni izdelke ki ustrezajo filtru
+#    }
     
     if(is.null(search) || search==""){
       tabela25=tabela15 #ce uporabnik ni filtriral izdekov, vrni celo tabelo
@@ -280,7 +284,7 @@ shinyServer(function(input, output,session) {
   
   output$izdelki50 <- renderTable({ #glavna tabela rezultatov
     tabela50=NajdiIzdelke50()
-    izdelki50= input$izbraniIzdelki50
+#    izdelki50= input$izbraniIzdelki50
     search = input$izbraniIzdelki250 
 
 
