@@ -242,7 +242,7 @@ shinyServer(function(input, output,session) {
   
 #-------------------------------------------------------------------------------------------------
   
-  #KODA ZA PODJETJE2
+  #KODA ZA PODJETJE
   
   NajdiIzdelke50 <- reactive({
     #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
@@ -302,8 +302,8 @@ shinyServer(function(input, output,session) {
 
   
 #-----------------------------------------------------------------------------------
-  #NAKUPOVALNI SEZNAM
-  output$mojizdelek <- renderText(input$izdelek)
+ # #NAKUPOVALNI SEZNAM
+ # output$mojizdelek <- renderText(input$izdelek)
   
   
   
