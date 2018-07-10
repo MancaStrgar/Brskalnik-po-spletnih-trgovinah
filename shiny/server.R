@@ -249,8 +249,6 @@ shinyServer(function(input, output,session) {
   #KODA ZA PODJETJE
   
   NajdiIzdelke50 <- reactive({
-    #Ob zagonu shiny javlja napako, ces da teh vrednosti se ni prejel od uporabnika.
-    #V tem primeru mu dam zelenjava/spar kot privzeto izbiro.
     #####
     
     
